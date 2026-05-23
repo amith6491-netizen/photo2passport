@@ -148,23 +148,46 @@ export default function App() {
   };
 
   const cropPhoto = async (b64,fd,fmtId,bri,con,bg) => {
-    const fmt=FORMATS[fmtId], img=await loadImg(b64);
-    const iW=img.naturalWidth||img.width, iH=img.naturalHeight||img.height;
-    const asp=fmt.mmW/fmt.mmH, fcX=fd.faceX*iW, fcY=fd.faceY*iH, fH=fd.faceH*iH;
-    let cropH=(fH*1.35)/0.73, cropW=cropH*asp;
-    if(cropW>iW){ cropW=iW; cropH=cropW/asp; }
-    if(cropH>iH){ cropH=iH; cropW=cropH*asp; }
-    const headTop=fcY-fH*.5-fH*.35;
-    const cY=Math.max(0,Math.min(headTop-cropH*.06,iH-cropH));
-    const cX=Math.max(0,Math.min(fcX-cropW/2,iW-cropW));
-    const cv=document.createElement("canvas"); cv.width=fmt.w; cv.height=fmt.h;
-    const ctx=cv.getContext("2d");
-    ctx.fillStyle=bg; ctx.fillRect(0,0,fmt.w,fmt.h);
-    ctx.filter=`brightness(${bri}%) contrast(${con}%)`;
-    ctx.drawImage(img,cX,cY,cropW,cropH,0,0,fmt.w,fmt.h);
-    ctx.filter="none";
-    return cv.toDataURL("image/jpeg",.95);
-  };
+  const fmt=FORMATS[fmtId], img=await loadImg(b64);
+  const iW=img.naturalWidth||img.width, iH=img.naturalHeight||img.height;
+  const asp=fmt.mmW/fmt.mmH, fcX=fd.faceX*iW, fcY=fd.faceY*iH, fH=fd.faceH*iH;
+  let cropH=(fH*1.35)/0.73, cropW=cropH*asp;
+  if(cropW>iW){ cropW=iW; cropH=cropW/asp; }
+  if(cropH>iH){ cropH=iH; cropW=cropH*asp; }
+  const headTop=fcY-fH*.5-fH*.35;
+  const cY=Math.max(0,Math.min(headTop-cropH*.06,iH-cropH));
+  const cX=Math.max(0,Math.min(fcX-cropW/2,iW-cropW));
+
+  // Step 1 — draw cropped image on temp canvas
+  const tmp=document.createElement("canvas"); tmp.width=fmt.w; tmp.height=fmt.h;
+  const tctx=tmp.getContext("2d");
+  tctx.filter=`brightness(${bri}%) contrast(${con}%)`;
+  tctx.drawImage(img,cX,cY,cropW,cropH,0,0,fmt.w,fmt.h);
+  tctx.filter="none";
+
+  // Step 2 — replace background pixels
+  const imgData=tctx.getImageData(0,0,fmt.w,fmt.h);
+  const d=imgData.data;
+  const bgR=parseInt(bg.slice(1,3),16);
+  const bgG=parseInt(bg.slice(3,5),16);
+  const bgB=parseInt(bg.slice(5,7),16);
+
+  for(let i=0;i<d.length;i+=4){
+    const r=d[i], g=d[i+1], b=d[i+2];
+    // detect light/white background pixels
+    const brightness=(r+g+b)/3;
+    const isLight = brightness > 200 && Math.max(r,g,b)-Math.min(r,g,b) < 40;
+    if(isLight){ d[i]=bgR; d[i+1]=bgG; d[i+2]=bgB; }
+  }
+  tctx.putImageData(imgData,0,0);
+
+  // Step 3 — final canvas with bg
+  const cv=document.createElement("canvas"); cv.width=fmt.w; cv.height=fmt.h;
+  const ctx=cv.getContext("2d");
+  ctx.fillStyle=bg; ctx.fillRect(0,0,fmt.w,fmt.h);
+  ctx.drawImage(tmp,0,0);
+  return cv.toDataURL("image/jpeg",.95);
+};
 
   const makeA4 = async (photob64,fmtId,count) => {
     const fmt=FORMATS[fmtId], a4W=2480, a4H=3508;
