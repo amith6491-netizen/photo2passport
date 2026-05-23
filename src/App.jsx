@@ -191,7 +191,7 @@ export default function App() {
 
   const makeA4 = async (photob64,fmtId,count) => {
     const fmt=FORMATS[fmtId], a4W=2480, a4H=3508;
-    const mg=Math.round(10*MM), gap=Math.round(3*MM);
+    const mg=Math.round(15*MM), gap=Math.round(6*MM);
     const cv=document.createElement("canvas"); cv.width=a4W; cv.height=a4H;
     const ctx=cv.getContext("2d");
     ctx.fillStyle="#fff"; ctx.fillRect(0,0,a4W,a4H);
