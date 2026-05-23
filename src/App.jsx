@@ -180,7 +180,7 @@ export default function App() {
 
   const makeA4 = async (photob64,fmtId,count) => {
     const fmt=FORMATS[fmtId], a4W=2480, a4H=3508;
-    const mg=Math.round(15*MM), gap=Math.round(6*MM);
+    const mg=Math.round(10*MM), gap=Math.round(6*MM);
     const cv=document.createElement("canvas"); cv.width=a4W; cv.height=a4H;
     const ctx=cv.getContext("2d");
     ctx.fillStyle="#fff"; ctx.fillRect(0,0,a4W,a4H);
@@ -579,7 +579,7 @@ export default function App() {
           <div style={{ display:"flex",alignItems:"flex-start",justifyContent:"space-between",flexWrap:"wrap",gap:12,marginBottom:16 }}>
             <div>
               <h3 style={{ fontSize:isMobile?16:20,fontWeight:700,color:t.text,marginBottom:4,fontFamily:"Syne,sans-serif" }}>A4 Printable Layout</h3>
-              <p style={{ fontSize:12,color:t.muted }}>{copies} copies of {FORMATS[selFormat].label} at 300 DPI</p>
+              <p style={{ fontSize:12,color:t.muted }}>{copies} copies of {FORMATS[selFormat].label} at 400 DPI</p>
             </div>
             <button onClick={()=>dlPDF(selFormat)} className="gbtn"
               style={{ color:"#fff",padding:"10px 20px",borderRadius:12,fontFamily:"Syne,sans-serif",fontWeight:700,fontSize:13,display:"flex",alignItems:"center",gap:6 }}>
@@ -619,7 +619,7 @@ export default function App() {
             Photo2Passport is a modern AI-powered browser app that simplifies the creation of professional passport and identity photos. No studio, no software, no sign-up required.
           </p>
           <p style={{ fontSize:13,lineHeight:1.75,color:t.muted,marginBottom:28 }}>
-            Powered by Claude AI for precise face detection and the HTML5 Canvas API for high-fidelity 300 DPI image processing.
+            Powered by Claude AI for precise face detection and the HTML5 Canvas API for high-fidelity 400 DPI image processing.
           </p>
           <div style={{ display:"grid",gridTemplateColumns:"repeat(3,1fr)",gap:10,marginBottom:28 }}>
             {[{val:"4+",label:"Formats"},{val:"300 DPI",label:"Quality"},{val:"100%",label:"Private"}].map((s,i)=>(
