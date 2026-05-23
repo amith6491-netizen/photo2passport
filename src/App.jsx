@@ -151,11 +151,11 @@ export default function App() {
   const fmt=FORMATS[fmtId], img=await loadImg(b64);
   const iW=img.naturalWidth||img.width, iH=img.naturalHeight||img.height;
   const asp=fmt.mmW/fmt.mmH, fcX=fd.faceX*iW, fcY=fd.faceY*iH, fH=fd.faceH*iH;
-  let cropH=(fH*1.35)/0.73, cropW=cropH*asp;
+  let cropH=(fH*2.2)/0.73, cropW=cropH*asp;
   if(cropW>iW){ cropW=iW; cropH=cropW/asp; }
   if(cropH>iH){ cropH=iH; cropW=cropH*asp; }
-  const headTop=fcY-fH*.5-fH*.35;
-  const cY=Math.max(0,Math.min(headTop-cropH*.06,iH-cropH));
+  const headTop=fcY-fH*.5-fH*.5;
+  const cY=Math.max(0,Math.min(headTop-cropH*.08,iH-cropH));
   const cX=Math.max(0,Math.min(fcX-cropW/2,iW-cropW));
 
   // Step 1 — draw cropped image on temp canvas
@@ -509,7 +509,7 @@ export default function App() {
                 <Printer size={13} color="#34d399"/> Copies on A4
               </div>
               <div style={{ display:"flex",alignItems:"center",gap:12 }}>
-                <input type="range" min={1} max={20} value={copies} onChange={(e)=>setCopies(+e.target.value)} style={{ flex:1,accentColor:"#6366f1" }}/>
+                <input type="range" min={1} max={24} value={copies} onChange={(e)=>setCopies(+e.target.value)} style={{ flex:1,accentColor:"#6366f1" }}/>
                 <span style={{ fontSize:20,fontWeight:700,color:t.text,fontFamily:"Syne,sans-serif",minWidth:26 }}>{copies}</span>
               </div>
             </div>
