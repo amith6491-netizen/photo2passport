@@ -1,3 +1,4 @@
+import emailjs from '@emailjs/browser';
 import { useState, useRef, useCallback, useEffect } from "react";
 import {
   Upload, Download, Camera, FileImage, Sun, Moon, ChevronRight,
@@ -672,7 +673,7 @@ export default function App() {
             </div>
           ) : (
             <div style={{ display:"flex",flexDirection:"column",gap:14 }}>
-              {[{id:"name",label:"Full Name",type:"text",ph:"Jane Smith"},{id:"email",label:"Email",type:"email",ph:"jane@example.com"}].map(f=>(
+              {[{id:"name",label:"Full Name",type:"text",ph:" your name"},{id:"email",label:"Email",type:"email",ph:"name@gmail.com"}].map(f=>(
                 <div key={f.id}>
                   <label style={{ display:"block",fontSize:12,fontWeight:700,color:t.text,marginBottom:6,fontFamily:"Syne,sans-serif" }}>{f.label}</label>
                   <input type={f.type} placeholder={f.ph} value={cForm[f.id]} onChange={(e)=>setCForm({...cForm,[f.id]:e.target.value})}
@@ -684,7 +685,24 @@ export default function App() {
                 <textarea rows={4} placeholder="How can we help?" value={cForm.msg} onChange={(e)=>setCForm({...cForm,msg:e.target.value})}
                   style={{ ...t.input,width:"100%",padding:"11px 13px",borderRadius:12,fontFamily:"Syne,sans-serif",fontSize:13,outline:"none",resize:"vertical" }}/>
               </div>
-              <button onClick={()=>{ if(cForm.name&&cForm.email) setCSent(true); else flash("Please fill all fields.",true); }} className="gbtn"
+              <button onClick={async ()=>{
+  if(!cForm.name || !cForm.email) return flash("Please fill all fields.",true);
+  try {
+    await emailjs.send(
+      "service_lv4rlqj",
+      "template_91089qu",
+      {
+        from_name:  cForm.name,
+        from_email: cForm.email,
+        message:    cForm.msg,
+      },
+      "FuMOfyNqMvcju6yCV"
+    );
+    setCSent(true);
+  } catch(e) {
+    flash("Failed to send. Try again.",true);
+  }
+}}className="gbtn"
                 style={{ color:"#fff",padding:"13px 0",borderRadius:13,fontFamily:"Syne,sans-serif",fontWeight:700,fontSize:15,display:"flex",alignItems:"center",justifyContent:"center",gap:8 }}>
                 <Mail size={16}/> Send Message
               </button>
